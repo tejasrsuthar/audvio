@@ -34,11 +34,12 @@ const AudioPlayer = () => {
 
     // check if this is actually a new song
     const isSongChange = prevSongRef.current !== currentSong?.audioUrl;
+
     if (isSongChange) {
       audio.src = currentSong?.audioUrl;
+
       // reset the playback position
       audio.currentTime = 0;
-
       prevSongRef.current = currentSong?.audioUrl;
 
       if (isPlaying) audio.play();
@@ -47,4 +48,5 @@ const AudioPlayer = () => {
 
   return <audio ref={audioRef} />;
 };
+
 export default AudioPlayer;
