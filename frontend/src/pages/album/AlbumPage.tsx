@@ -1,23 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { formatDuration } from "@/lib/utils";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { Clock, Pause, Play } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-const formatDuration = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-};
-
 const AlbumPage = () => {
   const { albumId } = useParams();
 
   const { currentAlbum, fetchAlbumById, isLoading } = useMusicStore();
-  const { currentIndex, isPlaying, playAlbum, togglePlay, currentSong } =
-    usePlayerStore();
+  const { isPlaying, playAlbum, togglePlay, currentSong } = usePlayerStore();
 
   useEffect(() => {
     if (albumId) fetchAlbumById(albumId);
