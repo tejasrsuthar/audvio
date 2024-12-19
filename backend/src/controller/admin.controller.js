@@ -60,18 +60,18 @@ export const deleteSong = async (req, res, next) => {
 
     const song = await Song.findById(id);
 
-    // if song belongs to an album, update album songs array
+    // if song belongs to an album, update the album's songs array
     if (song.albumId) {
       await Album.findByIdAndUpdate(song.albumId, {
         $pull: { songs: song._id },
       });
     }
 
-    await song.findByIdAndDelete(id);
+    await Song.findByIdAndDelete(id);
 
     res.status(200).json({ message: "Song deleted successfully" });
   } catch (error) {
-    console.log("Error in deleting song", error);
+    console.log("Error in deleteSong", error);
     next(error);
   }
 };

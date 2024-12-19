@@ -1,3 +1,4 @@
+// @ts-check
 import {
   ResizableHandle,
   ResizablePanel,
@@ -50,7 +51,6 @@ const MainLayout = () => {
         {!isMobile && (
           <>
             <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
-
             {/* Right sidebar */}
             <ResizablePanel
               defaultSize={20}
