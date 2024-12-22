@@ -2,9 +2,13 @@ import express from "express";
 import dotenv from "dotenv";
 import { clerkMiddleware } from "@clerk/express";
 import { createServer } from "http";
-import { initializeSocket } from "./lib/socket.js";
-
+import cors from "cors";
+import cron from "node-cron";
+import fs from "fs";
 import path from "path";
+import fileUpload from "express-fileupload";
+
+import { initializeSocket } from "./lib/socket.js";
 import { connectDB } from "./lib/db.js";
 import userRoutes from "./routes/user.route.js";
 import adminRoutes from "./routes/admin.route.js";
@@ -12,8 +16,6 @@ import authRoutes from "./routes/auth.route.js";
 import songRoutes from "./routes/song.route.js";
 import albumRoutes from "./routes/album.route.js";
 import statRoutes from "./routes/state.route.js";
-import fileUpload from "express-fileupload";
-import cors from "cors";
 
 dotenv.config();
 
@@ -40,6 +42,22 @@ app.use(
   })
 );
 
+// cron jobs
+const tempDir = path.join(process.cwd(), "tmp");
+cron.schedule("0 * * * *", () => {
+  if (fs.existsSync(tempDir)) {
+    fs.readdir(tempDir, (err, files) => {
+      if (err) {
+        console.log("error", err);
+        return;
+      }
+      for (const file of files) {
+        fs.unlink(path.join(tempDir, file), (err) => {});
+      }
+    });
+  }
+});
+
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
@@ -47,6 +65,13 @@ app.use("/api/auth", authRoutes);
 app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.get("*", (req, res) => {
+    res.send(path.resolve(__dirname, "../frontend/dist/index.html"));
+  });
+}
 
 // error handler
 app.use((err, req, res, next) => {
