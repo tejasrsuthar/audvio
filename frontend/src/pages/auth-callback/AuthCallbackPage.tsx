@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { axiosInstance } from "@/lib/axios";
-// import { useMusicStore } from "@/stores/useMusicStore";
 import { useUser } from "@clerk/clerk-react";
 import { Loader } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -10,20 +9,20 @@ const AuthCallbackPage = () => {
   const { isLoaded, user } = useUser();
   const navigate = useNavigate();
   const syncAttempted = useRef(false);
-  // const { songs, albums, fetchAlbums } = useMusicStore();
 
   useEffect(() => {
     const syncUser = async () => {
       if (!isLoaded || !user || syncAttempted.current) return;
 
       try {
-        axiosInstance.post("/auth/callback", {
+        syncAttempted.current = true;
+
+        await axiosInstance.post("/auth/callback", {
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
           imageUrl: user.imageUrl,
         });
-        syncAttempted.current = true;
       } catch (error) {
         console.log("Error in auth callback", error);
       } finally {
@@ -46,5 +45,4 @@ const AuthCallbackPage = () => {
     </div>
   );
 };
-
 export default AuthCallbackPage;
